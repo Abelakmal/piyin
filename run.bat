@@ -67,13 +67,13 @@ REM --------------------------------------------
 python -c "import pypinyin" >nul 2>nul
     if %errorlevel% neq 0 (
         echo [SETUP] Installing dependencies...
-        %PYTHON_EXEC% -m pip install --upgrade pip
+        call %PYTHON_EXEC% -m pip install --upgrade pip
         set INSTALL_EXIT=%ERRORLEVEL%
         if %INSTALL_EXIT% neq 0 (
             echo [ERROR] pip upgrade failed with exit %INSTALL_EXIT%
             exit /b 1
         )
-        %PYTHON_EXEC% -m pip install -r requirements.txt
+        call %PYTHON_EXEC% -m pip install -r requirements.txt
         set INSTALL_EXIT=%ERRORLEVEL%
         if %INSTALL_EXIT% neq 0 (
             echo [ERROR] Gagal install dependencies (pip exit %INSTALL_EXIT%)
