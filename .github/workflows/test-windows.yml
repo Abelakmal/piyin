@@ -28,5 +28,5 @@ jobs:
       - name: Run run.bat via PowerShell wrapper
         run: |
           Write-Host "Running run.bat via cmd"
-          cmd /c .\run.bat
+          cmd /c .\run.bat --text "测试一下拼音转换功能。"
         shell: pwsh
