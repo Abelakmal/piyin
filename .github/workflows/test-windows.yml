@@ -25,8 +25,8 @@ jobs:
       - name: Make run.bat executable (no-op on Windows)
         run: echo "Preparing to run run.bat"
 
-      - name: Run run.bat
+      - name: Run run.bat via PowerShell wrapper
         run: |
-          echo Running run.bat
-          .\run.bat
-        shell: cmd
+          Write-Host "Running run.bat via cmd"
+          cmd /c .\run.bat
+        shell: pwsh
