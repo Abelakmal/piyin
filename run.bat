@@ -11,6 +11,9 @@ echo Pinyin Converter - Dual Mode
 echo ========================================
 echo.
 
+REM Set code page to UTF-8 to better handle non-ASCII output in CI
+chcp 65001 >nul
+
 REM Cek/siapkan Python versi spesifik (untuk PaddleOCR)
 set REQUIRED_PYTHON_VERSION=3.10
 set PYTHON_EXE_NAME=python%REQUIRED_PYTHON_VERSION%
@@ -99,7 +102,8 @@ if "%~1"=="" (
     echo ====================================================
     echo   run.bat --input video.mp4
     echo   run.bat --input image.jpg
-    echo   run.bat --text "你好世界"
+    REM contoh teks Mandarin (non-ASCII) dihilangkan untuk kestabilan CI
+    echo   run.bat --text "<sample text>"
     echo.
     echo ====================================================
     echo Program 2: SRT Mandarin to Pinyin
