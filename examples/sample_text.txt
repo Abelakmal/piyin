@@ -1,0 +1,5 @@
+# File contoh teks Mandarin
+你好世界
+学习中文很有趣
+我喜欢编程
+今天天气很好

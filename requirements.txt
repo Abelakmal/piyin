@@ -1,0 +1,26 @@
+# Requirements untuk Aplikasi Konversi Mandarin ke Pinyin
+# Python 3.7+
+
+# Library untuk konversi Pinyin
+pypinyin==0.50.0
+
+# Library untuk OCR (Optical Character Recognition)
+easyocr==1.7.0
+paddleocr>=2.7.0
+paddlepaddle>=2.5.0
+pytesseract==0.3.10
+
+# Library untuk image processing
+opencv-python==4.8.1.78
+Pillow==9.5.0
+
+# Library untuk video processing
+opencv-contrib-python==4.8.1.78
+
+# Library dependencies
+numpy>=1.24.0,<2.0.0
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Optional: untuk performa lebih baik
+# scikit-image==0.22.0

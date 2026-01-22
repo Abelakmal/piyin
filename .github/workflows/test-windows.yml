@@ -1,0 +1,32 @@
+name: Test run.bat on Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  test-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Show Python
+        run: |
+          python --version
+          where python || where python3 || where py
+
+      - name: Make run.bat executable (no-op on Windows)
+        run: echo "Preparing to run run.bat"
+
+      - name: Run run.bat
+        run: |
+          echo Running run.bat
+          .\run.bat
+        shell: cmd
