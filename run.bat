@@ -1,42 +1,21 @@
 @echo off
-REM ============================================
-REM Pinyin Converter - Dual Mode (Windows)
-REM CI-safe batch script
-REM ============================================
-
-setlocal enabledelayedexpansion
+setlocal EnableDelayedExpansion
 
 echo ========================================
 echo Pinyin Converter - Dual Mode
 echo ========================================
 echo.
 
-REM Detect CI environment (GitHub Actions sets CI=true)
-if "%CI%"=="true" (
-    set IS_CI=1
-) else (
-    set IS_CI=0
-)
+if "%CI%"=="true" (set IS_CI=1) else (set IS_CI=0)
 
-REM UTF-8 output
 chcp 65001 >nul
 
 REM --------------------------------------------
-REM Python setup
+REM Python check
 REM --------------------------------------------
-set REQUIRED_PYTHON_VERSION=3.10
-set PYTHON_EXEC=python
-
-python --version >nul 2>nul
-if %errorlevel% neq 0 (
-    echo [ERROR] Python tidak ditemukan.
-    if "%IS_CI%"=="1" (
-        echo Python harus disediakan oleh runner CI.
-        exit /b 1
-    ) else (
-        echo Silakan install Python 3.10 terlebih dahulu.
-        goto END
-    )
+python --version >nul 2>nul || (
+    echo [ERROR] Python tidak ditemukan
+    exit /b 1
 )
 
 echo [INFO] Python ditemukan:
@@ -48,15 +27,13 @@ REM Virtual environment
 REM --------------------------------------------
 if not exist ".venv" (
     echo [SETUP] Membuat virtual environment...
-    python -m venv .venv
-    if %errorlevel% neq 0 (
+    python -m venv .venv || (
         echo [ERROR] Gagal membuat virtual environment
         exit /b 1
     )
 )
 
-call .venv\Scripts\activate.bat
-if %errorlevel% neq 0 (
+call .venv\Scripts\activate.bat || (
     echo [ERROR] Gagal mengaktifkan virtual environment
     exit /b 1
 )
@@ -64,26 +41,14 @@ if %errorlevel% neq 0 (
 REM --------------------------------------------
 REM Dependencies
 REM --------------------------------------------
-python -c "import pypinyin" >nul 2>nul
-    if %errorlevel% neq 0 (
-        echo [SETUP] Installing dependencies...
-        call %PYTHON_EXEC% -m pip install --upgrade pip
-        set INSTALL_EXIT=%ERRORLEVEL%
-        if %INSTALL_EXIT% neq 0 (
-            echo [ERROR] pip upgrade failed with exit %INSTALL_EXIT%
-            exit /b 1
-        )
-        call %PYTHON_EXEC% -m pip install -r requirements.txt
-        set INSTALL_EXIT=%ERRORLEVEL%
-        if %INSTALL_EXIT% neq 0 (
-            echo [ERROR] Gagal install dependencies (pip exit %INSTALL_EXIT%)
-            exit /b 1
-        )
-        echo [OK] Dependencies terinstall
-    )
+python -c "import pypinyin" >nul 2>nul || (
+    echo [SETUP] Installing dependencies...
+    python -m pip install --upgrade pip || exit /b 1
+    python -m pip install -r requirements.txt || exit /b 1
+)
 
 REM --------------------------------------------
-REM Argument routing (NO else-if!)
+REM Argument routing
 REM --------------------------------------------
 if "%~1"=="" goto MENU
 if "%~1"=="--convert" goto CONVERT
@@ -130,8 +95,5 @@ goto END
 
 :END
 echo.
-if "%IS_CI%"=="0" (
-    echo Tekan tombol apa saja untuk keluar...
-    pause >nul
-)
+if "%IS_CI%"=="0" pause
 exit /b 0
