@@ -28,7 +28,7 @@ jobs:
       - name: Run run.bat via PowerShell wrapper
         run: |
           Write-Host "Running run.bat via cmd"
-          cmd /c .\run.bat --convert-folder \examples
+          cmd /c .\run.bat --convert--folder \examples
         shell: pwsh
         env:
           PYTHONUTF8: "1"
