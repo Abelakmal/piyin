@@ -25,10 +25,15 @@ jobs:
       - name: Make run.bat executable (no-op on Windows)
         run: echo "Preparing to run run.bat"
 
-      - name: Run run.bat via PowerShell wrapper
+      - name: Run run.bat tests
         run: |
-          Write-Host "Running run.bat via cmd"
-          cmd /c .\run.bat --convert--folder \examples
+          Write-Host "=== Test 1: Double dash ==="
+          cmd /c .\run.bat --convert-folder examples
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+
+          Write-Host "=== Test 2: Single dash ==="
+          cmd /c .\run.bat -convert-folder examples
+          if ($LASTEXITCODE -ne 0) { exit 1 }
         shell: pwsh
         env:
           PYTHONUTF8: "1"

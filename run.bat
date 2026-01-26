@@ -50,10 +50,14 @@ python -c "import pypinyin" >nul 2>nul || (
 REM --------------------------------------------
 REM Argument routing
 REM --------------------------------------------
+:ARG_LOOP
 if "%~1"=="" goto MENU
-if "%~1"=="--convert" goto CONVERT
-if "%~1"=="--convert-folder" goto CONVERT_FOLDER
-if "%~1"=="--convert-help" goto CONVERT_HELP
+if /i "%~1"=="--convert" goto CONVERT
+if /i "%~1"=="-convert" goto CONVERT
+if /i "%~1"=="--convert-folder" goto CONVERT_FOLDER
+if /i "%~1"=="-convert-folder" goto CONVERT_FOLDER
+if /i "%~1"=="--convert-help" goto CONVERT_HELP
+if /i "%~1"=="-convert-help" goto CONVERT_HELP
 goto DEFAULT
 
 :MENU
@@ -77,12 +81,12 @@ goto END
 
 :CONVERT
 shift
-python srt_to_pinyin.py --file %*
+python srt_to_pinyin.py --file %1
 goto END
 
 :CONVERT_FOLDER
 shift
-python srt_to_pinyin.py --folder %*
+python srt_to_pinyin.py --folder %1
 goto END
 
 :CONVERT_HELP
