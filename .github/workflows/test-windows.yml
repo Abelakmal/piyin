@@ -28,7 +28,7 @@ jobs:
       - name: Run run.bat via PowerShell wrapper
         run: |
           Write-Host "Running run.bat via cmd"
-          cmd /c .\run.bat --text "测试一下拼音转换功能。"
+          cmd /c .\run.bat --convert-folder \examples
         shell: pwsh
         env:
           PYTHONUTF8: "1"
