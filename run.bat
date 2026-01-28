@@ -1,12 +1,10 @@
 @echo off
-setlocal EnableDelayedExpansion
+setlocal
 
 echo ========================================
 echo Pinyin Converter - Dual Mode
 echo ========================================
 echo.
-
-if "%CI%"=="true" (set IS_CI=1) else (set IS_CI=0)
 
 chcp 65001 >nul
 
@@ -48,17 +46,34 @@ python -c "import pypinyin" >nul 2>nul || (
 )
 
 REM --------------------------------------------
-REM Argument routing
+REM Argument dispatch
 REM --------------------------------------------
-:ARG_LOOP
 if "%~1"=="" goto MENU
-if /i "%~1"=="--convert" goto CONVERT
-if /i "%~1"=="-convert" goto CONVERT
-if /i "%~1"=="--convert-folder" goto CONVERT_FOLDER
-if /i "%~1"=="-convert-folder" goto CONVERT_FOLDER
-if /i "%~1"=="--convert-help" goto CONVERT_HELP
-if /i "%~1"=="-convert-help" goto CONVERT_HELP
-goto DEFAULT
+
+if /i "%~1"=="--convert" (
+    if "%~2"=="" goto CONVERT_HELP
+    python srt_to_pinyin.py --file "%~2"
+    goto END
+)
+
+if /i "%~1"=="--convert-folder" (
+    if "%~2"=="" goto CONVERT_HELP
+    python srt_to_pinyin.py --folder "%~2"
+    goto END
+)
+
+if /i "%~1"=="--convert-help" (
+    python srt_to_pinyin.py --help
+    goto END
+)
+
+if /i "%~1"=="--help" goto MENU
+
+REM --------------------------------------------
+REM Default: app.py only gets its own args
+REM --------------------------------------------
+python app.py %*
+goto END
 
 :MENU
 echo ====================================================
@@ -79,25 +94,13 @@ echo   run.bat --help
 echo   run.bat --convert-help
 goto END
 
-:CONVERT
-shift
-python srt_to_pinyin.py --file %1
-goto END
-
-:CONVERT_FOLDER
-shift
-python srt_to_pinyin.py --folder %1
-goto END
-
 :CONVERT_HELP
-python srt_to_pinyin.py --help
-goto END
-
-:DEFAULT
-python app.py %*
+echo Usage:
+echo   run.bat --convert file.srt
+echo   run.bat --convert-folder folder_path
 goto END
 
 :END
 echo.
-if "%IS_CI%"=="0" pause
+pause
 exit /b 0
