@@ -132,6 +132,7 @@ jobs:
             exit 1 
           }
           Write-Host "✓ Test 5 passed (correctly failed)"
+          exit 0  # Reset exit code for workflow
         shell: pwsh
         env:
           PYTHONUTF8: "1"
@@ -146,6 +147,7 @@ jobs:
             exit 1 
           }
           Write-Host "✓ Test 6 passed (correctly failed)"
+          exit 0  # Reset exit code for workflow
         shell: pwsh
         env:
           PYTHONUTF8: "1"
