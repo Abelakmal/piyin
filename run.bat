@@ -81,12 +81,12 @@ echo   run.bat --convert-help
 goto END
 
 :CONVERT
-python srt_to_pinyin.py --file %~2
+python srt_to_pinyin.py --file "%~2"
 set SCRIPT_EXIT=%ERRORLEVEL%
 goto END
 
 :CONVERT_FOLDER
-python srt_to_pinyin.py --folder %~2
+python srt_to_pinyin.py --folder "%~2"
 set SCRIPT_EXIT=%ERRORLEVEL%
 goto END
 
