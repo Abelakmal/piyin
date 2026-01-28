@@ -25,16 +25,180 @@ jobs:
       - name: Make run.bat executable (no-op on Windows)
         run: echo "Preparing to run run.bat"
 
-      - name: Run run.bat tests
+      - name: Create test files and folders
         run: |
-          Write-Host "=== Test 1: Double dash ==="
-          cmd /c .\run.bat --convert-folder examples
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+          # Create test folder with SRT files
+          New-Item -ItemType Directory -Force -Path "test_folder"
+          New-Item -ItemType Directory -Force -Path "test folder with spaces"
 
-          Write-Host "=== Test 2: Single dash ==="
-          cmd /c .\run.bat -convert-folder examples
-          if ($LASTEXITCODE -ne 0) { exit 1 }
+          # Create test SRT files
+          @"
+          1
+          00:00:00,000 --> 00:00:02,000
+          你好世界
+
+          2
+          00:00:02,000 --> 00:00:04,000
+          欢迎使用
+          "@ | Out-File -FilePath "test_folder/test.srt" -Encoding utf8
+
+          @"
+          1
+          00:00:00,000 --> 00:00:02,000
+          测试文件
+          "@ | Out-File -FilePath "test folder with spaces/test.srt" -Encoding utf8
+
+          @"
+          1
+          00:00:00,000 --> 00:00:02,000
+          单个文件测试
+          "@ | Out-File -FilePath "single_test.srt" -Encoding utf8
+        shell: pwsh
+
+      - name: "Test 1: Convert folder (double dash)"
+        run: |
+          Write-Host "=== Test 1: Convert folder with --convert-folder ==="
+          cmd /c .\run.bat --convert-folder test_folder
+          if ($LASTEXITCODE -ne 0) { 
+            Write-Error "Test 1 failed with exit code $LASTEXITCODE"
+            exit 1 
+          }
+
+          # Verify output file was created
+          if (-not (Test-Path "test_folder/test(P).srt")) {
+            Write-Error "Expected output file test_folder/test(P).srt was not created"
+            exit 1
+          }
+          Write-Host "✓ Test 1 passed"
         shell: pwsh
         env:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
+
+      - name: "Test 2: Convert folder (single dash)"
+        run: |
+          Write-Host "=== Test 2: Convert folder with -convert-folder ==="
+          cmd /c .\run.bat -convert-folder test_folder
+          if ($LASTEXITCODE -ne 0) { 
+            Write-Error "Test 2 failed with exit code $LASTEXITCODE"
+            exit 1 
+          }
+          Write-Host "✓ Test 2 passed"
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
+      - name: "Test 3: Convert single file (double dash)"
+        run: |
+          Write-Host "=== Test 3: Convert single file with --convert ==="
+          cmd /c .\run.bat --convert single_test.srt
+          if ($LASTEXITCODE -ne 0) { 
+            Write-Error "Test 3 failed with exit code $LASTEXITCODE"
+            exit 1 
+          }
+
+          # Verify output file was created
+          if (-not (Test-Path "single_test(P).srt")) {
+            Write-Error "Expected output file single_test(P).srt was not created"
+            exit 1
+          }
+          Write-Host "✓ Test 3 passed"
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
+      - name: "Test 4: Convert single file (single dash)"
+        run: |
+          Write-Host "=== Test 4: Convert single file with -convert ==="
+          cmd /c .\run.bat -convert single_test.srt
+          if ($LASTEXITCODE -ne 0) { 
+            Write-Error "Test 4 failed with exit code $LASTEXITCODE"
+            exit 1 
+          }
+          Write-Host "✓ Test 4 passed"
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
+      - name: "Test 5: Invalid folder (should fail gracefully)"
+        run: |
+          Write-Host "=== Test 5: Convert non-existent folder (should fail) ==="
+          cmd /c .\run.bat --convert-folder non_existent_folder
+          if ($LASTEXITCODE -eq 0) { 
+            Write-Error "Test 5 should have failed but returned success"
+            exit 1 
+          }
+          Write-Host "✓ Test 5 passed (correctly failed)"
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
+      - name: "Test 6: Invalid file (should fail gracefully)"
+        run: |
+          Write-Host "=== Test 6: Convert non-existent file (should fail) ==="
+          cmd /c .\run.bat --convert non_existent.srt
+          if ($LASTEXITCODE -eq 0) { 
+            Write-Error "Test 6 should have failed but returned success"
+            exit 1 
+          }
+          Write-Host "✓ Test 6 passed (correctly failed)"
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
+      - name: "Test 7: Path with spaces"
+        run: |
+          Write-Host "=== Test 7: Convert folder with spaces in path ==="
+          cmd /c ".\run.bat --convert-folder ""test folder with spaces"""
+          if ($LASTEXITCODE -ne 0) { 
+            Write-Error "Test 7 failed with exit code $LASTEXITCODE"
+            exit 1 
+          }
+
+          # Verify output file was created
+          if (-not (Test-Path "test folder with spaces/test(P).srt")) {
+            Write-Error "Expected output file was not created"
+            exit 1
+          }
+          Write-Host "✓ Test 7 passed"
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
+      - name: "Test 8: Verify correct script is called"
+        run: |
+          Write-Host "=== Test 8: Verify srt_to_pinyin.py is called (not app.py) ==="
+
+          # Run with verbose logging to capture what's happening
+          $output = cmd /c .\run.bat --convert single_test.srt 2>&1 | Out-String
+
+          # Check that it mentions the correct conversion
+          if ($output -match "Memproses.*\.srt" -or $output -match "Convert") {
+            Write-Host "✓ Test 8 passed - srt_to_pinyin.py was called correctly"
+          } else {
+            Write-Error "Test 8 failed - Output doesn't indicate SRT conversion"
+            Write-Host "Output: $output"
+            exit 1
+          }
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
+      - name: Display test results
+        if: always()
+        run: |
+          Write-Host "`n========================================="
+          Write-Host "Test Results Summary"
+          Write-Host "========================================="
+          Write-Host "All argument parsing tests completed!"
+          Get-ChildItem -Recurse -Filter "*(P).srt" | ForEach-Object {
+            Write-Host "✓ Created: $($_.FullName)"
+          }
+        shell: pwsh
