@@ -50,6 +50,7 @@ python -c "import pypinyin" >nul 2>nul || (
 REM --------------------------------------------
 REM Argument routing
 REM --------------------------------------------
+set SCRIPT_EXIT=0
 :ARG_LOOP
 if "%~1"=="" goto MENU
 if /i "%~1"=="--convert" goto CONVERT
@@ -80,24 +81,26 @@ echo   run.bat --convert-help
 goto END
 
 :CONVERT
-shift
-python srt_to_pinyin.py --file %1
+python srt_to_pinyin.py --file %~2
+set SCRIPT_EXIT=%ERRORLEVEL%
 goto END
 
 :CONVERT_FOLDER
-shift
-python srt_to_pinyin.py --folder %1
+python srt_to_pinyin.py --folder %~2
+set SCRIPT_EXIT=%ERRORLEVEL%
 goto END
 
 :CONVERT_HELP
 python srt_to_pinyin.py --help
+set SCRIPT_EXIT=%ERRORLEVEL%
 goto END
 
 :DEFAULT
 python app.py %*
+set SCRIPT_EXIT=%ERRORLEVEL%
 goto END
 
 :END
 echo.
 if "%IS_CI%"=="0" pause
-exit /b 0
+exit /b %SCRIPT_EXIT%
