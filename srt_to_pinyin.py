@@ -79,13 +79,16 @@ Contoh penggunaan:
   python srt_to_pinyin.py --folder ./subtitles
   python srt_to_pinyin.py --file 1.srt
   python srt_to_pinyin.py --folder ./subtitles --output ./output
-  python srt_to_pinyin.py --folder ./subtitles --verbose
+  python srt_to_pinyin.py --folder ./subtitles --spacing 2
+  python srt_to_pinyin.py --folder ./subtitles --spacing 3 --verbose
         """
     )
     
     parser.add_argument('--folder', type=str, help='Folder berisi file .srt Mandarin')
     parser.add_argument('--file', type=str, help='Convert satu file .srt saja')
     parser.add_argument('--output', type=str, help='Folder output (default: sama dengan input)')
+    parser.add_argument('--spacing', type=int, default=1, choices=[1, 2, 3],
+                       help='Jumlah spasi antar karakter Pinyin (1, 2, atau 3, default: 1)')
     parser.add_argument('--verbose', action='store_true', help='Tampilkan log detail')
     
     args = parser.parse_args()
@@ -97,7 +100,7 @@ Contoh penggunaan:
     
     # Inisialisasi
     logger = Logger(verbose=args.verbose)
-    text_processor = TextProcessor(logger)
+    text_processor = TextProcessor(logger, spacing=args.spacing)
     
     try:
         # Mode: Convert satu file

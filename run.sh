@@ -145,6 +145,8 @@ if [ $# -eq 0 ]; then
     echo -e "${GREEN}Program 2: SRT Mandarin → Pinyin${NC}"
     echo "  ./run.sh --convert file.srt"
     echo "  ./run.sh --convert-folder ./subtitles"
+    echo "  ./run.sh --convert-folder ./subtitles 2    # 2 spasi antar karakter"
+    echo "  ./run.sh --convert-folder ./subtitles 3    # 3 spasi antar karakter"
     echo ""
     echo "Help:"
     echo "  ./run.sh --help          (Program 1 help)"
@@ -159,7 +161,10 @@ else
     elif [[ "$1" == "--convert-folder" ]]; then
         # Mode: Convert batch folder
         shift
-        python srt_to_pinyin.py --folder "$@"
+        FOLDER_ARG="$1"
+        shift
+        SPACING_ARG="${1:-1}"  # Default spacing = 1 if not provided
+        python srt_to_pinyin.py --folder "$FOLDER_ARG" --spacing "$SPACING_ARG"
     elif [[ "$1" == "--convert-help" ]]; then
         # Help untuk program 2
         python srt_to_pinyin.py --help

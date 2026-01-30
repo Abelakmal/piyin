@@ -193,6 +193,98 @@ jobs:
           PYTHONUTF8: "1"
           PYTHONIOENCODING: "utf-8"
 
+      - name: "Test 9: Spacing parameter = 1 (default)"
+        run: |
+          Write-Host "=== Test 9: Convert with spacing=1 (single space) ==="
+
+          # Create clean test folder
+          New-Item -ItemType Directory -Force -Path "test_spacing"
+          @"
+          1
+          00:00:00,000 --> 00:00:02,000
+          你好
+          "@ | Out-File -FilePath "test_spacing/spacing_test.srt" -Encoding utf8
+
+          cmd /c .\run.bat --convert-folder test_spacing 1
+          if ($LASTEXITCODE -ne 0) { 
+            Write-Error "Test 9 failed with exit code $LASTEXITCODE"
+            exit 1 
+          }
+
+          # Verify output file was created
+          if (-not (Test-Path "test_spacing/spacing_test(P).srt")) {
+            Write-Error "Expected output file test_spacing/spacing_test(P).srt was not created"
+            exit 1
+          }
+
+          # Check spacing in output
+          $content = Get-Content "test_spacing/spacing_test(P).srt" -Raw -Encoding utf8
+          if ($content -match "ni hao") {
+            Write-Host "✓ Test 9 passed - Single space detected"
+          } else {
+            Write-Error "Test 9 failed - Expected single space between characters"
+            Write-Host "Content: $content"
+            exit 1
+          }
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
+      - name: "Test 10: Spacing parameter = 2 (double space)"
+        run: |
+          Write-Host "=== Test 10: Convert with spacing=2 (double space) ==="
+
+          # Remove previous output
+          Remove-Item "test_spacing/spacing_test(P).srt" -ErrorAction SilentlyContinue
+
+          cmd /c .\run.bat --convert-folder test_spacing 2
+          if ($LASTEXITCODE -ne 0) { 
+            Write-Error "Test 10 failed with exit code $LASTEXITCODE"
+            exit 1 
+          }
+
+          # Check spacing in output
+          $content = Get-Content "test_spacing/spacing_test(P).srt" -Raw -Encoding utf8
+          if ($content -match "ni  hao") {
+            Write-Host "✓ Test 10 passed - Double space detected"
+          } else {
+            Write-Error "Test 10 failed - Expected double space between characters"
+            Write-Host "Content: $content"
+            exit 1
+          }
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
+      - name: "Test 11: Spacing parameter = 3 (triple space)"
+        run: |
+          Write-Host "=== Test 11: Convert with spacing=3 (triple space) ==="
+
+          # Remove previous output
+          Remove-Item "test_spacing/spacing_test(P).srt" -ErrorAction SilentlyContinue
+
+          cmd /c .\run.bat --convert-folder test_spacing 3
+          if ($LASTEXITCODE -ne 0) { 
+            Write-Error "Test 11 failed with exit code $LASTEXITCODE"
+            exit 1 
+          }
+
+          # Check spacing in output
+          $content = Get-Content "test_spacing/spacing_test(P).srt" -Raw -Encoding utf8
+          if ($content -match "ni   hao") {
+            Write-Host "✓ Test 11 passed - Triple space detected"
+          } else {
+            Write-Error "Test 11 failed - Expected triple space between characters"
+            Write-Host "Content: $content"
+            exit 1
+          }
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
       - name: Display test results
         if: always()
         run: |

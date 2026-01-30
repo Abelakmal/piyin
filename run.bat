@@ -74,6 +74,8 @@ echo Program 2: SRT Mandarin to Pinyin
 echo ====================================================
 echo   run.bat --convert file.srt
 echo   run.bat --convert-folder .\subtitles
+echo   run.bat --convert-folder .\subtitles 2    # 2 spasi antar karakter
+echo   run.bat --convert-folder .\subtitles 3    # 3 spasi antar karakter
 echo.
 echo Help:
 echo   run.bat --help
@@ -86,7 +88,10 @@ set SCRIPT_EXIT=%ERRORLEVEL%
 goto END
 
 :CONVERT_FOLDER
-python srt_to_pinyin.py --folder "%~2"
+set FOLDER_ARG=%~2
+set SPACING_ARG=%~3
+if "%SPACING_ARG%"=="" set SPACING_ARG=1
+python srt_to_pinyin.py --folder "%FOLDER_ARG%" --spacing %SPACING_ARG%
 set SCRIPT_EXIT=%ERRORLEVEL%
 goto END
 

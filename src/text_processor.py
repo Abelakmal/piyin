@@ -28,14 +28,16 @@ class TextProcessor:
         '实': '买',
     }
     
-    def __init__(self, logger=None):
+    def __init__(self, logger=None, spacing=1):
         """
         Inisialisasi TextProcessor
         
         Args:
             logger: Instance logger untuk mencatat proses
+            spacing: Jumlah spasi antar karakter Pinyin (1, 2, atau 3)
         """
         self.logger = logger
+        self.spacing = max(1, min(3, spacing))  # Ensure spacing is between 1-3
     
     def process(self, text):
         """
@@ -107,8 +109,9 @@ class TextProcessor:
         # Konversi setiap karakter
         pinyin_list = pinyin(text, style=style, heteronym=False)
         
-        # Gabungkan hasil
-        result = ' '.join([item[0] for item in pinyin_list])
+        # Gabungkan hasil dengan spacing yang dikonfigurasi
+        separator = ' ' * self.spacing
+        result = separator.join([item[0] for item in pinyin_list])
         
         return result
     
