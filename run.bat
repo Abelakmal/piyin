@@ -75,7 +75,8 @@ echo ====================================================
 echo   run.bat --convert file.srt
 echo   run.bat --convert-folder .\subtitles
 echo   run.bat --convert-folder .\subtitles 2    # 2 spasi antar karakter
-echo   run.bat --convert-folder .\subtitles 3    # 3 spasi antar karakter
+echo   run.bat --convert-folder .\subtitles 5    # 5 spasi antar karakter
+echo   run.bat --convert-folder .\subtitles 10   # 10 spasi antar karakter
 echo.
 echo Help:
 echo   run.bat --help

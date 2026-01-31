@@ -34,10 +34,10 @@ class TextProcessor:
         
         Args:
             logger: Instance logger untuk mencatat proses
-            spacing: Jumlah spasi antar karakter Pinyin (1, 2, atau 3)
+            spacing: Jumlah spasi antar karakter Pinyin (angka positif, default: 1)
         """
         self.logger = logger
-        self.spacing = max(1, min(3, spacing))  # Ensure spacing is between 1-3
+        self.spacing = max(1, spacing)  # Ensure spacing is at least 1
     
     def process(self, text):
         """

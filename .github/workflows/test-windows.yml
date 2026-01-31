@@ -266,9 +266,9 @@ jobs:
           Remove-Item "test_spacing/spacing_test(P).srt" -ErrorAction SilentlyContinue
 
           cmd /c .\run.bat --convert-folder test_spacing 3
-          if ($LASTEXITCODE -ne 0) { 
+          if ($LASTEXITCODE -ne 0) {
             Write-Error "Test 11 failed with exit code $LASTEXITCODE"
-            exit 1 
+            exit 1
           }
 
           # Check spacing in output
@@ -277,6 +277,34 @@ jobs:
             Write-Host "✓ Test 11 passed - Triple space detected"
           } else {
             Write-Error "Test 11 failed - Expected triple space between characters"
+            Write-Host "Content: $content"
+            exit 1
+          }
+        shell: pwsh
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+
+      - name: "Test 12: Spacing parameter = 7 (large spacing - no upper limit)"
+        run: |
+          Write-Host "=== Test 12: Convert with spacing=7 (verifying no upper limit) ==="
+
+          # Remove previous output
+          Remove-Item "test_spacing/spacing_test(P).srt" -ErrorAction SilentlyContinue
+
+          cmd /c .\run.bat --convert-folder test_spacing 7
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Test 12 failed with exit code $LASTEXITCODE"
+            exit 1
+          }
+
+          # Check spacing in output (7 spaces = "ni       hao")
+          $content = Get-Content "test_spacing/spacing_test(P).srt" -Raw -Encoding utf8
+          # Count spaces between ni and hao - should be 7
+          if ($content -match "ni {7}hao") {
+            Write-Host "✓ Test 12 passed - Large spacing (7) works correctly"
+          } else {
+            Write-Error "Test 12 failed - Expected 7 spaces between characters"
             Write-Host "Content: $content"
             exit 1
           }
